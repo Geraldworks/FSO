@@ -18,8 +18,7 @@ const update = async (id, newPerson) => {
 };
 
 const removePerson = async (id) => {
-  const request = axios.delete(`${baseURL}/${id}`);
-  // might need to add something here
+  return axios.delete(`${baseURL}/${id}`);
 };
 
 export default { getAll, create, update, removePerson };

@@ -1,29 +1,9 @@
 {
   "persons": [
     {
-      "name": "Arto Hellas",
-      "number": "040-123456",
-      "id": 1
-    },
-    {
       "name": "Gerald",
-      "number": "8585858585",
-      "id": 2
-    },
-    {
-      "name": "Herald",
-      "number": "2384234234",
-      "id": 3
-    },
-    {
-      "name": "Tim",
-      "number": "34234234",
-      "id": 4
-    },
-    {
-      "name": "Deqi",
-      "number": "91010101010",
-      "id": 5
+      "number": "123123",
+      "id": 11
     }
   ]
 }
