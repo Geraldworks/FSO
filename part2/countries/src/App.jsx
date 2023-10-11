@@ -35,16 +35,16 @@ const Image = ({ imageURL, imageAlt }) => {
   );
 };
 
-// const Weather = ({ capital, temp, wind, weatherImageUrl }) => {
-//   return (
-//     <div>
-//       <h3>Weather in {capital}</h3>
-//       <p>Temperature {temp} Celsius</p>
-//       <img src={weatherImageUrl} alt="" />
-//       <p>Wind {wind} m/s</p>
-//     </div>
-//   );
-// };
+const Weather = ({ capital, temp, speed, weatherImageUrl }) => {
+  return (
+    <div>
+      <h3>Weather in {capital}</h3>
+      <p>Temperature {temp} Celsius</p>
+      <img src={weatherImageUrl} alt="" />
+      <p>Wind {speed} m/s</p>
+    </div>
+  );
+};
 
 const SpecificCountry = ({ data }) => {
   const country = data.name.common; // string
@@ -60,6 +60,12 @@ const SpecificCountry = ({ data }) => {
       <Area area={area} />
       <Languages languages={languages} />
       <Image imageURL={flags.png} imageAlt={flags.alt} />
+      <Weather
+        capital={capital}
+        temp={data.temp}
+        speed={data.speed}
+        weatherImageUrl={data.icon}
+      />
     </div>
   );
 };
@@ -136,7 +142,16 @@ const App = () => {
     const results = allResults.filter((country) =>
       country.name.common.toLowerCase().includes(search.toLowerCase())
     );
-    setSearchResults(results);
+    if (results.length === 1) {
+      const lat = results[0].capitalInfo.latlng[0];
+      const lon = results[0].capitalInfo.latlng[1];
+      services.getWeatherInfo(lat, lon).then((data) => {
+        results[0] = { ...results[0], ...data };
+        setSearchResults(results);
+      });
+    } else {
+      setSearchResults(results);
+    }
   }, [search]);
 
   // Handling of specific country will be setting the search result
@@ -145,10 +160,6 @@ const App = () => {
   const handleSpecificCountry = (countryName) => {
     setSearch(countryName);
   };
-
-  // const createWeatherImageUrl = (icon) => {
-  //   return `https://openweathermap.org/img/wn/${icon}.png`;
-  // };
 
   return (
     <div>
