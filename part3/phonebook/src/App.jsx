@@ -108,28 +108,41 @@ const App = () => {
           })
           .catch((error) => {
             // Display error message
-            console.log(error);
-            setNewError(
-              `Information of ${personSearch[0].name} has already been removed from the server`
-            );
+            if (error.response.data.error.name === "ValidationError") {
+              setNewError(error.response.data.error.message);
+            } else {
+              setNewError(
+                `Information of ${personSearch[0].name} has already been removed from the server`
+              );
+              // Tidy up the application
+              setPersons(
+                persons.filter((person) => person.id !== newPerson.id)
+              );
+            }
             // Set time out for error message
             setTimeout(() => {
               setNewError(null);
             }, 5000);
-            // Tidy up the application
-            setPersons(persons.filter((person) => person.id !== newPerson.id));
           });
       }
     } else {
       // create new contact here
       const newPerson = { name: newName, number: newNumber };
-      personServices.create(newPerson).then((returnedPerson) => {
-        setPersons(persons.concat(returnedPerson));
-        setNewMessage(`Added ${returnedPerson.name}`);
-        setTimeout(() => setNewMessage(null), 5000);
-      });
-      setNewNumber("");
-      setNewName("");
+      personServices
+        .create(newPerson)
+        .then((returnedPerson) => {
+          setPersons(persons.concat(returnedPerson));
+          setNewMessage(`Added ${returnedPerson.name}`);
+          setTimeout(() => setNewMessage(null), 5000);
+          setNewNumber("");
+          setNewName("");
+        })
+        .catch((error) => {
+          setNewError(error.response.data.error.message);
+          setTimeout(() => {
+            setNewError(null);
+          }, 5000);
+        });
     }
   };
 
