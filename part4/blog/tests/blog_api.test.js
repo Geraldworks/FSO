@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const helper = require("./test_helper");
 const supertest = require("supertest");
 const app = require("../app");
+const { update } = require("lodash");
 
 const api = supertest(app);
 
@@ -87,6 +88,43 @@ test("a blog without a url results in an error", async () => {
   };
 
   await api.post("/api/blogs").send(newBlog).expect(400);
+});
+
+test("a valid existing blog can be deleted successfully", async () => {
+  const blogsAtStart = await helper.blogsInDb();
+  const firstBlog = blogsAtStart[0];
+
+  await api.delete(`/api/blogs/${firstBlog.id}`).expect(204);
+
+  const blogsAtEnd = await helper.blogsInDb();
+  assert.strictEqual(blogsAtEnd.length, blogsAtStart.length - 1);
+
+  const titles = blogsAtEnd.map((blog) => blog.title);
+  assert(!titles.includes(firstBlog.title));
+
+  // deleting the same resource gets a 204 response
+  await api.delete(`/api/blogs/${firstBlog.id}`).expect(204);
+});
+
+test("deleting a blog that does not exist results in error", async () => {
+  await api.delete(`/api/blogs/${"AEaeje91903485"}`).expect(400);
+});
+
+test("a blog can be updated successfully", async () => {
+  const blogsAtStart = await helper.blogsInDb();
+  const blogToUpdate = blogsAtStart[0];
+
+  const blogToUpdateId = blogToUpdate.id;
+  const updatedBlog = { ...blogToUpdate, likes: 100 };
+
+  await api.put(`/api/blogs/${blogToUpdateId}`).send(updatedBlog).expect(200);
+
+  const blogsAtEnd = await helper.blogsInDb();
+  const updatedBlogFromDb = blogsAtEnd.find(
+    (blog) => blog.id === blogToUpdateId
+  );
+
+  assert.strictEqual(updatedBlogFromDb.likes, updatedBlog.likes);
 });
 
 after(async () => {
