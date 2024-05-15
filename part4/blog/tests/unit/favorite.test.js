@@ -1,6 +1,6 @@
 const { test, describe } = require("node:test");
 const assert = require("node:assert");
-const listHelper = require("../utils/list_helper");
+const listHelper = require("../../utils/list_helper");
 
 describe("favourite blog", () => {
   const emptyList = [];
@@ -23,7 +23,7 @@ describe("favourite blog", () => {
     const answer = {
       title: "Go",
       author: "Edsger",
-      likes: 5
+      likes: 5,
     };
     assert.deepStrictEqual(result, answer);
   });
@@ -44,14 +44,14 @@ describe("favourite blog", () => {
       url: "https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf",
       likes: 19,
       __v: 0,
-    }
+    },
   ];
   test("when list has more than one blog, retrieves the best blog", () => {
     const result = listHelper.favoriteBlog(listWithMoreThanOneBlog);
     const answer = {
       title: "Jude",
       author: "Gerald",
-      likes: 19
+      likes: 19,
     };
     assert.deepStrictEqual(result, answer);
   });
