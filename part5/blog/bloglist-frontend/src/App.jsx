@@ -1,27 +1,28 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Blog from "./components/Blog";
 import Login from "./components/Login";
 import CreateBlog from "./components/CreateBlog";
 import SuccessNotification from "./components/Success";
 import ErrorNotification from "./components/Error";
+import Togglable from "./components/Toggleable";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
   const [user, setUser] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
+  const blogCreationRef = useRef();
 
+  // function to get all blogs from the database
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
+    blogService
+      .getAll()
+      .then((blogs) => setBlogs(blogs.sort((a, b) => b.likes - a.likes)));
   }, []);
 
+  // function to check if a user is logged is already
   useEffect(() => {
     const userCreds = window.localStorage.getItem("loggedBlogappUser");
 
@@ -32,18 +33,12 @@ const App = () => {
     }
   }, []);
 
-  const handleLogin = async (event) => {
-    event.preventDefault();
-
+  // function to handle logging in
+  const handleLogin = async (userCreds) => {
     try {
-      const user = await loginService.login({
-        username,
-        password,
-      });
+      const user = await loginService.login(userCreds);
       window.localStorage.setItem("loggedBlogappUser", JSON.stringify(user));
       setUser(user);
-      setUsername("");
-      setPassword("");
     } catch (exception) {
       setErrorMessage("wrong username or password");
       setTimeout(() => {
@@ -52,26 +47,22 @@ const App = () => {
     }
   };
 
+  // function to handle logging out
   const handleLogout = () => {
     setUser(null);
     window.localStorage.removeItem("loggedBlogappUser");
     window.location.reload();
   };
 
-  const handleCreation = async (event) => {
-    event.preventDefault();
-
+  // function to handle blog creation
+  const handleCreation = async (blog) => {
     try {
-      const blogObject = await blogService.create({
-        title,
-        author,
-        url,
-      });
-      setSuccessMessage(`a new blog ${title} by ${author} added`);
+      const blogObject = await blogService.create(blog);
+      blogCreationRef.current.toggleVisibility();
+      setSuccessMessage(
+        `a new blog ${blogObject.title} by ${blogObject.author} added`
+      );
       setBlogs(blogs.concat(blogObject));
-      setTitle("");
-      setUrl("");
-      setAuthor("");
       setTimeout(() => {
         setSuccessMessage(null);
       }, 5000);
@@ -83,18 +74,50 @@ const App = () => {
     }
   };
 
+  const handleUpdate = async (blogId, blogToUpdate) => {
+    const blogUpdaterHandler = blogService.updateBlog(blogId);
+    try {
+      await blogUpdaterHandler(blogToUpdate);
+      const blogToReplace = blogs.find((blog) => blog.id === blogId);
+      const filteredBlogs = blogs.filter((blog) => blog.id !== blogId);
+      const newBlogs = filteredBlogs.concat({
+        ...blogToUpdate,
+        id: blogId,
+        user: blogToReplace.user,
+      });
+      setBlogs(newBlogs.sort((a, b) => b.likes - a.likes));
+    } catch {
+      setErrorMessage("error when updating blog");
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+    }
+  };
+
+  const handleDeletion = async (blogToDelete) => {
+    const blogRemoverHandler = blogService.deleteBlog(blogToDelete.id);
+    const confirm = window.confirm(
+      `Remove blog ${blogToDelete.title} by ${blogToDelete.author}`
+    );
+    if (confirm) {
+      try {
+        await blogRemoverHandler();
+        setBlogs(blogs.filter((blog) => blog.id !== blogToDelete.id));
+      } catch (exception) {
+        setErrorMessage("blog cannot be deleted; you do not own this blog");
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 5000);
+      }
+    }
+  };
+
   if (user === null) {
     return (
       <div>
         <h2>Log in to Application</h2>
         <ErrorNotification message={errorMessage} />
-        <Login
-          username={username}
-          password={password}
-          setUsername={setUsername}
-          setPassword={setPassword}
-          handleLogin={handleLogin}
-        />
+        <Login login={handleLogin} />
       </div>
     );
   }
@@ -107,18 +130,21 @@ const App = () => {
       <p>
         {user.name} logged in <button onClick={handleLogout}>logout</button>
       </p>
-      <CreateBlog
-        title={title}
-        author={author}
-        url={url}
-        setTitle={setTitle}
-        setAuthor={setAuthor}
-        setUrl={setUrl}
-        create={handleCreation}
-      />
+      <Togglable buttonLabel="create new blog" ref={blogCreationRef}>
+        <CreateBlog create={handleCreation} />
+      </Togglable>
       <br />
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog
+          key={blog.id}
+          blog={blog}
+          blogUpdater={(updatedBlog) => handleUpdate(blog.id, updatedBlog)}
+          blogDeleter={
+            blog.user.username === user.username
+              ? () => handleDeletion(blog)
+              : null
+          }
+        />
       ))}
     </div>
   );
