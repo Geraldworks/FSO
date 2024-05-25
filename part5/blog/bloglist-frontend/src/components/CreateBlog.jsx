@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const createBlog = ({ create }) => {
+const CreateBlog = ({ create }) => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
@@ -57,4 +57,4 @@ const createBlog = ({ create }) => {
   );
 };
 
-export default createBlog;
+export default CreateBlog;
