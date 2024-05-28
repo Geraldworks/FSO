@@ -43,7 +43,7 @@ const Blog = ({ blog, blogUpdater, blogDeleter }) => {
     );
   }
   return (
-    <div style={blogStyle} className='title-author-clicked'>
+    <div style={blogStyle} className="title-author-clicked">
       <p>
         {blog.title} {blog.author}{" "}
         <ToggleButton
