@@ -41,8 +41,8 @@ const initialState = anecdotesAtStart.map(asObject);
 // Reducer is a function that manages your Actions
 // It has an initial state, and then subsequent Actions
 const reducer = (state = initialState, action) => {
-  console.log("state before: ", state);
-  console.log("action", action);
+  // console.log("state before: ", state);
+  // console.log("action", action);
 
   switch (action.type) {
     case "VOTE": {
