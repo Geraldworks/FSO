@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { voteAnecdote } from "../reducers/anecdoteReducer";
 import { voteAnecNotif, clearAnecNotif } from "../reducers/notificationReducer";
+import anecdoteService from "../services/anecdotes";
 
 const Anecdote = ({ anecdote, handleVote }) => {
   return (
@@ -21,6 +22,15 @@ const AnecdoteList = () => {
     }
     return anecdotes.filter((anec) => anec.content.includes(filter));
   });
+  const handleUpvote = async (anecdote) => {
+    dispatch(voteAnecdote(anecdote.id));
+    dispatch(voteAnecNotif(anecdote.content));
+    await anecdoteService.updateAnecdote({
+      ...anecdote,
+      votes: anecdote.votes + 1,
+    });
+    setTimeout(() => dispatch(clearAnecNotif()), 5000);
+  };
   return (
     <div>
       {anecdotes
@@ -30,11 +40,7 @@ const AnecdoteList = () => {
           <Anecdote
             key={anecdote.id}
             anecdote={anecdote}
-            handleVote={() => {
-              dispatch(voteAnecdote(anecdote.id));
-              dispatch(voteAnecNotif(anecdote.content));
-              setTimeout(() => dispatch(clearAnecNotif()), 5000);
-            }}
+            handleVote={() => handleUpvote(anecdote)}
           />
         ))}
     </div>
