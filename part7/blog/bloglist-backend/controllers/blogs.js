@@ -32,6 +32,30 @@ router.post("/", userExtractor, async (request, response) => {
   response.status(201).json(savedBlog);
 });
 
+router.post("/:id/comments", async (request, response) => {
+  // userExtractor used but creds not used since anonymous
+  const oldBlog = await Blog.findById(request.params.id);
+
+  if (!oldBlog) {
+    return response.status(204).end();
+  }
+  const newBlog = {
+    title: oldBlog.title,
+    author: oldBlog.author,
+    url: oldBlog.url,
+    likes: oldBlog.likes,
+    comments: oldBlog.comments.concat(request.body.comment),
+    user: oldBlog.user,
+  };
+
+  const blogFromDb = await Blog.findByIdAndUpdate(request.params.id, newBlog, {
+    new: true,
+  });
+
+  // returns the new set of comments
+  response.json(blogFromDb);
+});
+
 router.delete("/:id", userExtractor, async (request, response) => {
   const user = request.user;
 
@@ -63,6 +87,7 @@ router.put("/:id", async (request, response) => {
     author: body.author,
     url: body.url,
     likes: body.likes,
+    comments: body.comments,
     user: body.user,
   };
 

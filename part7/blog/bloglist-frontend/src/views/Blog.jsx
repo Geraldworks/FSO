@@ -2,12 +2,15 @@ import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { deleteBlog, likeBlog } from "../reducers/blogsReducer";
 import { useDispatch } from "react-redux";
+import Comments from "../components/Comments";
+import ErrorNotification from "../components/Error";
+import SuccessNotification from "../components/Success";
 
 const Blog = () => {
-  const user = useSelector(({ user }) => user);
   const params = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const user = useSelector(({ user }) => user);
   const blog = useSelector(({ blogs }) => {
     return blogs.find((blog) => blog.id === params.id);
   });
@@ -32,6 +35,8 @@ const Blog = () => {
 
   return (
     <div>
+      <SuccessNotification />
+      <ErrorNotification />
       <h2>{blog.title}</h2>
       <p>{blog.url}</p>
       <p>
@@ -42,6 +47,11 @@ const Blog = () => {
       {user !== null && user.username === blog.user.username ? (
         <button onClick={handleDeleteBlog}>delete blog</button>
       ) : null}
+      <Comments
+        blogUser={blog.user}
+        blogId={blog.id}
+        comments={blog.comments}
+      />
     </div>
   );
 };
