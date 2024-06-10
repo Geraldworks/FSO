@@ -1,18 +1,21 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { login } from "../reducers/userReducer";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = async (event) => {
     event.preventDefault();
     const userCreds = { username, password };
-    await dispatch(login(userCreds));
-    setUsername("");
-    setPassword("");
+    const user = await dispatch(login(userCreds));
+    if (user) {
+      navigate("/");
+    }
   };
 
   return (

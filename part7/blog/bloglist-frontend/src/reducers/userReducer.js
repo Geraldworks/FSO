@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import blogService from "../services/blogs";
 import loginService from "../services/login";
 import { setTimedErrorNotif } from "./errorNotifReducer";
+import { useNavigate } from "react-router-dom";
 
 const userSlice = createSlice({
   name: "user",
@@ -46,9 +47,8 @@ export const login = (userCreds) => {
 
 export const logout = () => {
   return (dispatch) => {
-    dispatch(clearUser);
+    dispatch(clearUser());
     window.localStorage.removeItem("loggedBlogappUser");
-    window.location.reload();
   };
 };
 

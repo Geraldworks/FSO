@@ -59,7 +59,7 @@ const Blog = ({ blog }) => {
         <button onClick={() => dispatch(likeBlog(blog.id))}>like</button>
       </p>
       <p>{blog.user.name}</p>
-      {user.username === blog.user.username ? (
+      {user !== null && user.username === blog.user.username ? (
         <button style={displayRemove} onClick={handleDeleteBlog}>
           remove
         </button>
