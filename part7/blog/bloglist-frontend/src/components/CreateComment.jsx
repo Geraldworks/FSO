@@ -4,6 +4,7 @@ import { updateBlog } from "../reducers/blogsReducer";
 import { setTimedErrorNotif } from "../reducers/errorNotifReducer";
 import { setTimedSuccessNotif } from "../reducers/successNotifReducer";
 import blogService from "../services/blogs";
+import { Button, Space, Input, Form } from "antd";
 
 const CreateComment = ({ blogId, blogUser }) => {
   const [commentObj, resetComment] = useField("text");
@@ -32,10 +33,14 @@ const CreateComment = ({ blogId, blogUser }) => {
   };
   return (
     <div>
-      <form onSubmit={handleSubmit}>
-        <input {...commentObj} />
-        <button type="submit">add comment</button>
-      </form>
+      <Form>
+        <Input {...commentObj}></Input>
+        <Space>
+          <Button type="primary" onClick={handleSubmit}>
+            add comment
+          </Button>
+        </Space>
+      </Form>
     </div>
   );
 };

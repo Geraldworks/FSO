@@ -13,6 +13,7 @@
   "dependencies": {
     "@reduxjs/toolkit": "^2.2.5",
     "@vitest/coverage-v8": "^1.6.0",
+    "antd": "^5.18.0",
     "axios": "^1.4.0",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",

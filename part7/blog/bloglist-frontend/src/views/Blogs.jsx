@@ -5,6 +5,7 @@ import ErrorNotification from "../components/Error";
 import { useRef } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { Divider, List } from "antd";
 
 const blogStyle = {
   paddingTop: 10,
@@ -33,11 +34,15 @@ const Blogs = () => {
           </Toggleable>
         </div>
       )}
-      {blogs.map((blog) => (
-        <p key={blog.id} style={blogStyle}>
-          <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
-        </p>
-      ))}
+      <Divider orientation="left">Available Blogs</Divider>
+      <List
+        dataSource={blogs}
+        renderItem={(blog) => (
+          <List.Item>
+            <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+          </List.Item>
+        )}
+      />
     </div>
   );
 };
