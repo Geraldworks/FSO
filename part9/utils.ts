@@ -39,3 +39,14 @@ export const parseManyNumberArguments = (args: string[]): ExerciseInputs => {
 
   return { target: numberArray[0], exercises: numberArray.slice(1) };
 };
+
+export const parseBmiQueryParams = (
+  weight: string,
+  height: string
+): Measurements => {
+  if (isNaN(Number(weight)) || isNaN(Number(height))) {
+    throw new Error("malformatted parameters");
+  } else {
+    return { weight: Number(weight), height: Number(height) };
+  }
+};

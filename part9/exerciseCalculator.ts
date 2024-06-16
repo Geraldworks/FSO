@@ -41,7 +41,7 @@ const computeAverage = (numArr: number[]): number => {
   return numArr.reduce((acc, curr) => acc + curr, 0) / numArr.length;
 };
 
-const calculateExercises = (
+export const calculateExercises = (
   dailyAmount: number[],
   targetAmount: number
 ): ExerciseBreakdown => {
