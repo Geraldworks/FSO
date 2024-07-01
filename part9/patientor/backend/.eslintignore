@@ -1,0 +1,32 @@
+# Node modules
+node_modules/
+
+# Build directories
+dist/
+build/
+
+# Temporary files
+*.log
+*.tmp
+*.temp
+
+# Environment variable files
+.env
+.env.*
+
+# Coverage directories
+coverage/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Configuration files
+tsconfig.json
+tsconfig.*.json
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
