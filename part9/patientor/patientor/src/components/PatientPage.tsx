@@ -1,11 +1,12 @@
 import { useParams } from "react-router";
-import { Patient } from "../types";
+import { Diagnosis, Patient } from "../types";
 import MaleIcon from "@mui/icons-material/Male";
 import FemaleIcon from "@mui/icons-material/Female";
 import TransgenderIcon from "@mui/icons-material/Transgender";
 
 interface Props {
   patients: Patient[];
+  diagnoses: Diagnosis[];
 }
 
 const decideIcon = (gender: string) => {
@@ -18,11 +19,11 @@ const decideIcon = (gender: string) => {
   }
 };
 
-const PatientPage = ({ patients }: Props) => {
+const PatientPage = ({ patients, diagnoses }: Props) => {
   const id = useParams().id;
 
   const patient = patients.find((p) => p.id === id);
-  
+
   if (patient) {
     return (
       <div>
@@ -31,6 +32,23 @@ const PatientPage = ({ patients }: Props) => {
         </h2>
         <p>ssn: {patient.ssn}</p>
         <p>occupation: {patient.occupation}</p>
+        <h3>entries</h3>
+        <div>
+          {patient.entries.map((entry) => (
+            <div key={entry.id}>
+              <p>
+                {entry.date} {entry.description}
+              </p>
+              <ul>
+                {entry.diagnosisCodes?.map((code, index) => (
+                  <li key={index}>
+                    {code} {diagnoses.find((d) => d.code === code)?.name}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
       </div>
     );
   } else {
